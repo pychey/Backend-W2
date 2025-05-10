@@ -20,6 +20,22 @@ const server = http.createServer((req, res) => {
         `);
     }
     // Implement more routes here
+    else if (url === '/about' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('About us: at CADT, we love node.js!');
+    }
+    else if (url === '/contact-us' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('You can reach us vai email...');
+    }
+    else if (url === '/products' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('Buy one get one...');
+    }
+    else if (url === '/projects' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        return res.end('Here are our awesome projects');
+    }
     else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         return res.end('404 Not Found');
