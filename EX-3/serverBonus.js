@@ -1,4 +1,3 @@
-// server.js
 const http = require('http');
 const fs = require('fs');
 
@@ -25,7 +24,6 @@ const server = http.createServer((req, res) => {
     }
 
     if (url === '/contact' && method === 'POST') {
-        // Implement form submission handling
         let body = '';
 
         req.on('data', chunk => {
@@ -44,15 +42,41 @@ const server = http.createServer((req, res) => {
 
             console.log(`Received name: ${name}`);
 
-            fs.appendFile('submissions.txt', name + '\n', err => {
+            if (!name.trim()) {
+                res.writeHead(400, { 'Content-Type': 'text/html' });
+                return res.end(`
+                    <p>Error: Name cannot be empty</p>
+                    <a href="/contact">Go back</a>
+                `);
+            }
+
+            const filePath = 'submissions.json';
+            let data = [];
+
+            if (fs.existsSync(filePath)) {
+                try {
+                    const fileContent = fs.readFileSync(filePath, 'utf8');
+                    data = JSON.parse(fileContent);
+                } catch (err) {
+                    console.error('Error reading JSON file:', err);
+                }
+            }
+
+            data.push({ name });
+
+            fs.writeFile(filePath, JSON.stringify(data, null, 2), err => {
                 if (err) {
                     console.error(err);
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     return res.end('Internal Server Error');
                 }
 
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end('Thank you for your submission!');
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.end(`
+                    <h1>Thank you, ${name}!</h1>
+                    <p>Your name has been saved successfully.</p>
+                    <a href="/contact">Back to form</a>
+                `);
             });
         });
 
